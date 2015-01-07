@@ -1,12 +1,13 @@
 package com.jnape.palatable.dmutex.fs;
 
+import com.jnape.palatable.dmutex.DistributedLock;
 import lombok.EqualsAndHashCode;
 
 import java.io.IOException;
 import java.nio.channels.FileLock;
 
 @EqualsAndHashCode
-public class DistributedFileSystemLock {
+public class DistributedFileSystemLock implements DistributedLock {
 
     private final FileLock fileLock;
 
@@ -14,6 +15,7 @@ public class DistributedFileSystemLock {
         this.fileLock = fileLock;
     }
 
+    @Override
     public void release() {
         try {
             fileLock.release();

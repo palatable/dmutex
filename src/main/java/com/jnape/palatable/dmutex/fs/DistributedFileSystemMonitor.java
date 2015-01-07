@@ -1,10 +1,11 @@
 package com.jnape.palatable.dmutex.fs;
 
+import com.jnape.palatable.dmutex.DistributedMonitor;
 import com.jnape.palatable.dmutex.FailedAcquisitionAttemptException;
 
 import java.nio.channels.FileChannel;
 
-public class DistributedFileSystemMonitor {
+public class DistributedFileSystemMonitor implements DistributedMonitor<DistributedFileSystemLock> {
 
     private final FileChannel fileChannel;
 
@@ -12,6 +13,7 @@ public class DistributedFileSystemMonitor {
         this.fileChannel = fileChannel;
     }
 
+    @Override
     public DistributedFileSystemLock tryAcquire() throws FailedAcquisitionAttemptException {
         try {
             return new DistributedFileSystemLock(fileChannel.lock());
