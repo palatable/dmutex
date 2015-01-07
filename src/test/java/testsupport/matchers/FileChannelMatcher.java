@@ -17,7 +17,7 @@ public abstract class FileChannelMatcher extends BaseMatcher<FileChannel> {
 
     protected abstract boolean matches(FileChannel fileChannel);
 
-    private static final class UnlockedFileChannelMatcher extends FileChannelMatcher {
+    private static final class LockedFileChannelMatcher extends FileChannelMatcher {
         @Override
         protected boolean matches(FileChannel fileChannel) {
             try {
@@ -26,9 +26,9 @@ public abstract class FileChannelMatcher extends BaseMatcher<FileChannel> {
                     fileLock.release();
                 } catch (IOException ignored) {
                 }
-                return true;
-            } catch (OverlappingFileLockException stillLocked) {
                 return false;
+            } catch (OverlappingFileLockException stillLocked) {
+                return true;
             } catch (IOException ioException) {
                 throw new AssertionError(ioException);
             }
@@ -36,16 +36,43 @@ public abstract class FileChannelMatcher extends BaseMatcher<FileChannel> {
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("not locked");
+            description.appendText("FileChannel to be locked");
         }
 
         @Override
         public void describeMismatch(Object item, Description description) {
-            description.appendText("was locked");
+            description.appendText("it was unlocked");
         }
     }
 
-    public static FileChannelMatcher notLocked() {
-        return new UnlockedFileChannelMatcher();
+    private static final class UnlockedFileChannelMatcher extends FileChannelMatcher {
+        private final LockedFileChannelMatcher lockedFileChannelMatcher;
+
+        public UnlockedFileChannelMatcher(LockedFileChannelMatcher lockedFileChannelMatcher) {
+            this.lockedFileChannelMatcher = lockedFileChannelMatcher;
+        }
+
+        @Override
+        protected boolean matches(FileChannel fileChannel) {
+            return !lockedFileChannelMatcher.matches(fileChannel);
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("FileChannel to be unlocked");
+        }
+
+        @Override
+        public void describeMismatch(Object item, Description description) {
+            description.appendText("it was locked");
+        }
+    }
+
+    public static FileChannelMatcher isLocked() {
+        return new LockedFileChannelMatcher();
+    }
+
+    public static FileChannelMatcher isUnlocked() {
+        return new UnlockedFileChannelMatcher(new LockedFileChannelMatcher());
     }
 }

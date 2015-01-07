@@ -43,10 +43,21 @@
     </developers>
 
     <properties>
+        <lombok.version>1.14.8</lombok.version>
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
         <maven-site-plugin.version>3.0</maven-site-plugin.version>
         <wagon-ssh.version>1.0-beta-7</wagon-ssh.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -56,6 +67,10 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 

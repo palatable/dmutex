@@ -3,50 +3,43 @@ package com.jnape.palatable.dmutex.fs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import testsupport.fixtures.Fixtures;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static testsupport.matchers.FileChannelMatcher.notLocked;
+import static testsupport.fixtures.Fixtures.createChannel;
+import static testsupport.fixtures.Fixtures.testLockFile;
+import static testsupport.matchers.FileChannelMatcher.isUnlocked;
 
 public class DistributedFileSystemLockTest {
 
     private FileChannel fileChannel;
+    private FileLock    fileLock;
 
     @Before
-    public void setUp() {
-        fileChannel = Fixtures.lockFileChannel();
+    public void setUp() throws IOException {
+        fileChannel = createChannel(testLockFile());
+        fileLock = fileChannel.lock();
     }
 
     @Test
-    public void releaseUnlocksFileChannel() throws IOException {
-        FileLock fileLock = fileChannel.lock();
-
+    public void releaseUnlocksFileChannel() {
         new DistributedFileSystemLock(fileLock).release();
-
-        assertThat(fileChannel, is(notLocked()));
+        assertThat(fileChannel, isUnlocked());
     }
 
     @Test
-    public void releaseLeavesFileChannelOpen() throws IOException {
-        FileLock fileLock = fileChannel.lock();
-
+    public void releaseLeavesFileChannelOpen() {
         new DistributedFileSystemLock(fileLock).release();
-
         assertTrue(fileChannel.isOpen());
     }
 
     @After
-    public void tearDown() {
-        try {
-            fileChannel.close();
-        } catch (IOException ignored) {
-        }
+    public void tearDown() throws IOException {
+        fileLock.release();
+        fileChannel.close();
     }
-
 }

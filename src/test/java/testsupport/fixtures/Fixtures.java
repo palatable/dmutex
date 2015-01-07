@@ -13,7 +13,7 @@ public class Fixtures {
 
     private static final URL LOCK_FILE = DistributedFileSystemLockTest.class.getResource("/lockfile");
 
-    public static File lockFile() {
+    public static File testLockFile() {
         try {
             return new File(LOCK_FILE.toURI());
         } catch (URISyntaxException e) {
@@ -21,9 +21,9 @@ public class Fixtures {
         }
     }
 
-    public static FileChannel lockFileChannel() {
+    public static FileChannel createChannel(File file) {
         try {
-            return new FileOutputStream(lockFile()).getChannel();
+            return new FileOutputStream(file).getChannel();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
