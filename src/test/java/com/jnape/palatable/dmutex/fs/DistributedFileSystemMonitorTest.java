@@ -67,8 +67,8 @@ public class DistributedFileSystemMonitorTest {
         monitor.tryAcquire();
     }
 
-    @Test(expected = FailedAcquisitionAttemptException.class)
-    public void otherIOExceptionsAreAlsoConsideredFailedAcquisitionAttempts() throws IOException {
+    @Test(expected = RuntimeException.class)
+    public void otherIOExceptionsAreWrappedInRuntimeExceptions() throws IOException {
         fileChannel.close();
 
         monitor.tryAcquire();

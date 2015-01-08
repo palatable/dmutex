@@ -6,7 +6,9 @@ import com.jnape.palatable.dmutex.FailedAcquisitionAttemptException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.channels.OverlappingFileLockException;
 
 public final class DistributedFileSystemMonitor implements DistributedMonitor<DistributedFileSystemLock> {
 
@@ -20,8 +22,10 @@ public final class DistributedFileSystemMonitor implements DistributedMonitor<Di
     public DistributedFileSystemLock tryAcquire() throws FailedAcquisitionAttemptException {
         try {
             return new DistributedFileSystemLock(fileChannel.lock());
-        } catch (Exception failed) {
-            throw new FailedAcquisitionAttemptException(failed);
+        } catch (OverlappingFileLockException overlap) {
+            throw new FailedAcquisitionAttemptException(overlap);
+        } catch (IOException ioException) {
+            throw new RuntimeException(ioException);
         }
     }
 
