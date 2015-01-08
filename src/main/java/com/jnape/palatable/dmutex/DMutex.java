@@ -1,18 +1,18 @@
 package com.jnape.palatable.dmutex;
 
-public class DMutex {
+public class DMutex<Lock extends DistributedLock> {
 
-    private final DistributedMonitor distributedMonitor;
+    private final DistributedMonitor<Lock> distributedMonitor;
 
-    public DMutex(DistributedMonitor distributedMonitor) {
+    public DMutex(DistributedMonitor<Lock> distributedMonitor) {
         this.distributedMonitor = distributedMonitor;
     }
 
-    public DistributedLock acquire() {
+    public Lock acquire() throws LockAcquisitionFailedException {
         do {
             try {
                 return distributedMonitor.tryAcquire();
-            } catch (FailedAcquisitionAttemptException ignored) {
+            } catch (LockCurrentlyHeldException ignored) {
             }
         }
         while (true);

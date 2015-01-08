@@ -1,7 +1,7 @@
 package com.jnape.palatable.dmutex.fs;
 
 import com.jnape.palatable.dmutex.DistributedMonitor;
-import com.jnape.palatable.dmutex.FailedAcquisitionAttemptException;
+import com.jnape.palatable.dmutex.LockCurrentlyHeldException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,11 +19,11 @@ public final class DistributedFileSystemMonitor implements DistributedMonitor<Di
     }
 
     @Override
-    public DistributedFileSystemLock tryAcquire() throws FailedAcquisitionAttemptException {
+    public DistributedFileSystemLock tryAcquire() throws LockCurrentlyHeldException {
         try {
             return new DistributedFileSystemLock(fileChannel.lock());
         } catch (OverlappingFileLockException overlap) {
-            throw new FailedAcquisitionAttemptException(overlap);
+            throw new LockCurrentlyHeldException(overlap);
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         }

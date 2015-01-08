@@ -1,6 +1,6 @@
 package com.jnape.palatable.dmutex.fs;
 
-import com.jnape.palatable.dmutex.FailedAcquisitionAttemptException;
+import com.jnape.palatable.dmutex.LockCurrentlyHeldException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class DistributedFileSystemMonitorTest {
         assertThat(fileChannel, isUnlocked());
     }
 
-    @Test(expected = FailedAcquisitionAttemptException.class)
+    @Test(expected = LockCurrentlyHeldException.class)
     public void acquisitionAttemptThrowsExceptionIfChannelWasAlreadyLocked() throws IOException {
         fileChannel.lock();
 

@@ -13,14 +13,14 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class DMutexTest {
 
-    @Mock private DistributedMonitor mockMonitor;
+    @Mock private DistributedMonitor<DistributedLock> mockMonitor;
     @Mock private DistributedLock    mockLock;
 
     private DMutex dMutex;
 
     @Before
     public void setUp() {
-        dMutex = new DMutex(mockMonitor);
+        dMutex = new DMutex<DistributedLock>(mockMonitor);
     }
 
     @Test
@@ -33,9 +33,9 @@ public class DMutexTest {
     @Test
     public void repeatedlyTriesToAcquireLockIfAttemptsAreTemporarilyUnsuccessful() {
         when(mockMonitor.tryAcquire())
-                .thenThrow(new FailedAcquisitionAttemptException(new IllegalStateException("Failed attempt 1")))
-                .thenThrow(new FailedAcquisitionAttemptException(new IllegalStateException("Failed attempt 2")))
-                .thenThrow(new FailedAcquisitionAttemptException(new IllegalStateException("Failed attempt 3")))
+                .thenThrow(new LockCurrentlyHeldException(new IllegalStateException("Failed attempt 1")))
+                .thenThrow(new LockCurrentlyHeldException(new IllegalStateException("Failed attempt 2")))
+                .thenThrow(new LockCurrentlyHeldException(new IllegalStateException("Failed attempt 3")))
                 .thenReturn(mockLock);
 
         assertThat(dMutex.acquire(), is(mockLock));
