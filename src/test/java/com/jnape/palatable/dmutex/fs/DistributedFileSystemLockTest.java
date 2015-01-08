@@ -11,7 +11,7 @@ import java.nio.channels.FileLock;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static testsupport.fixtures.Fixtures.createChannel;
-import static testsupport.fixtures.Fixtures.testLockFile;
+import static testsupport.fixtures.Fixtures.writableLockFile;
 import static testsupport.matchers.FileChannelMatcher.isUnlocked;
 
 public class DistributedFileSystemLockTest {
@@ -21,7 +21,7 @@ public class DistributedFileSystemLockTest {
 
     @Before
     public void setUp() throws IOException {
-        fileChannel = createChannel(testLockFile());
+        fileChannel = createChannel(writableLockFile());
         fileLock = fileChannel.lock();
     }
 

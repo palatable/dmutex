@@ -11,11 +11,23 @@ import java.nio.channels.FileChannel;
 
 public class Fixtures {
 
-    private static final URL LOCK_FILE = DistributedFileSystemLockTest.class.getResource("/lockfile");
+    private static final URL WRITABLE_LOCK_FILE     = DistributedFileSystemLockTest.class.getResource("/writableLockFile");
+    private static final URL NON_WRITABLE_LOCK_FILE = DistributedFileSystemLockTest.class.getResource("/nonWritableLockFile");
 
-    public static File testLockFile() {
+    public static File writableLockFile() {
         try {
-            return new File(LOCK_FILE.toURI());
+            return new File(WRITABLE_LOCK_FILE.toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static File nonWritableLockFile() {
+        try {
+            File file = new File(NON_WRITABLE_LOCK_FILE.toURI());
+            file.setWritable(false);
+            return file;
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
