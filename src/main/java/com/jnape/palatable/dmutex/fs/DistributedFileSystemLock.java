@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 
 @EqualsAndHashCode
-public class DistributedFileSystemLock implements DistributedLock {
+public final class DistributedFileSystemLock implements DistributedLock {
 
     private final FileLock fileLock;
 

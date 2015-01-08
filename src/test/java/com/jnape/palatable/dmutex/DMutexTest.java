@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static com.jnape.palatable.dmutex.Duration.milliseconds;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -14,7 +15,7 @@ import static org.mockito.Mockito.when;
 public class DMutexTest {
 
     @Mock private DistributedMonitor<DistributedLock> mockMonitor;
-    @Mock private DistributedLock    mockLock;
+    @Mock private DistributedLock mockLock;
 
     private DMutex dMutex;
 
@@ -39,5 +40,12 @@ public class DMutexTest {
                 .thenReturn(mockLock);
 
         assertThat(dMutex.acquire(), is(mockLock));
+    }
+
+    @Test(expected = LockAcquisitionFailedException.class)
+    public void failsWithExceptionIfTimeExpiresBeforeSuccessfulLockAcquisition() {
+        when(mockMonitor.tryAcquire()).thenThrow(new LockCurrentlyHeldException(new IllegalStateException("Always failing attempt")));
+
+        dMutex.acquire(milliseconds(100));
     }
 }
