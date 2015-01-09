@@ -7,7 +7,7 @@ import static java.lang.String.format;
 public class LockAcquisitionFailedException extends RuntimeException {
 
     public LockAcquisitionFailedException(Throwable cause) {
-        super("Unable to acquire a lock within the specified time limit", cause);
+        super("Unable to acquire a lock", cause);
     }
 
     public static LockAcquisitionFailedException lockAcquisitionFailed(Throwable cause) {

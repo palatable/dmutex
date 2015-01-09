@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.jnape.palatable.dmutex.Duration.milliseconds;
+import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -47,5 +48,25 @@ public class DMutexTest {
         when(mockMonitor.tryAcquire()).thenThrow(new LockCurrentlyHeldException(new IllegalStateException("Always failing attempt")));
 
         dMutex.acquire(milliseconds(100));
+    }
+
+    @Test(expected = LockAcquisitionFailedException.class)
+    public void interruptsProperly() {
+        when(mockMonitor.tryAcquire())
+                .thenThrow(new LockCurrentlyHeldException(new IllegalStateException("Always failing attempt")));
+
+        final Thread testThread = Thread.currentThread();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sleep(100);
+                    testThread.interrupt();
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }).start();
+
+        dMutex.acquire();
     }
 }

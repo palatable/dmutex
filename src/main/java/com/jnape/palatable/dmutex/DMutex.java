@@ -3,6 +3,7 @@ package com.jnape.palatable.dmutex;
 import static com.jnape.palatable.dmutex.Duration.forever;
 import static com.jnape.palatable.dmutex.LockAcquisitionFailedException.lockAcquisitionFailed;
 import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.sleep;
 
 public final class DMutex<Lock extends DistributedLock> {
 
@@ -20,6 +21,11 @@ public final class DMutex<Lock extends DistributedLock> {
         long expirationTimestamp = currentTimeMillis() + maxWait.toMillis();
         do {
             try {
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    throw lockAcquisitionFailed(e);
+                }
                 return distributedMonitor.tryAcquire();
             } catch (LockCurrentlyHeldException ignored) {
             }
