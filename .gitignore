@@ -14,3 +14,8 @@ hs_err_pid*
 # IDEs
 .idea/*
 *.iml
+target/*
+
+# gradle
+.gradle/*
+build/*

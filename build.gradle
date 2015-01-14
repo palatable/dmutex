@@ -1,0 +1,85 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+group = 'com.jnape.palatable'
+version = '1.0'
+description = "Distributed JVM Mutex"
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.14.8'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2.1'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'dMutex'
+                packaging 'jar'
+                description 'Distributed JVM Mutex'
+                url 'http://github.com/palatable/dmutex'
+
+                scm {
+                    url 'scm:git@github.com:palatable/dmutex.git'
+                    connection 'scm:git@github.com:palatable/dmutex.git'
+                    developerConnection 'scm:git@github.com:palatable/dmutex.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'http://choosealicense.com/licenses/mit/'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'jnape'
+                        name 'John Napier'
+                    }
+                }
+            }
+        }
+    }
+}
