@@ -19,18 +19,24 @@ public final class DMutex<Lock extends DistributedLock> {
 
     public Lock acquire(Duration maxWait) throws LockAcquisitionFailedException {
         long expirationTimestamp = currentTimeMillis() + maxWait.toMillis();
+
         do {
             try {
-                try {
-                    sleep(100);
-                } catch (InterruptedException e) {
-                    throw lockAcquisitionFailed(e);
-                }
                 return distributedMonitor.tryAcquire();
             } catch (LockCurrentlyHeldException ignored) {
+                pauseForOneMs();
             }
         }
         while (currentTimeMillis() < expirationTimestamp);
+
         throw lockAcquisitionFailed(maxWait);
+    }
+
+    private void pauseForOneMs() {
+        try {
+            sleep(1);
+        } catch (InterruptedException e) {
+            throw lockAcquisitionFailed(e);
+        }
     }
 }
