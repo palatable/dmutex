@@ -5,6 +5,7 @@ apply plugin: 'signing'
 group = 'com.jnape.palatable'
 version = '1.0'
 description = "Distributed JVM Mutex"
+ext.packaging = 'jar'
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.6
